@@ -39,15 +39,13 @@
 		"jest:watch": "jest --watch",
 		"jest:cov": "jest --coverage",
 		"lint:es": "eslint .",
-		"lint:ts":
-			"tslint \"packages/**/*.{ts,tsx}\" -e \"**/{lib,node_modules}/**\"",
+		"lint:ts": "tslint \"packages/**/*.{ts,tsx}\" -e \"**/{lib,node_modules}/**\"",
 		"lint:tsc": "tsc",
 		"lint": "run-s lint:*",
 		"test_modules": "lerna run test --stream",
 		"publish_docs": "./scripts/publishDocumentation.sh",
 		"test": "run-s lint test_modules jest:cov",
-		"prettify":
-			"prettier 'packages/*/**/*.js' 'examples/**/*.js' 'site/**/*.js'",
+		"prettify": "prettier 'packages/*/**/*.js' 'examples/**/*.js' 'site/**/*.js'",
 		"precommit": "lint-staged",
 		"start": "lerna run --stream start",
 		"prepublish": "npm test"
@@ -79,8 +77,15 @@
 		"tslint-react": "^3.5.1"
 	},
 	"jest": {
-		"moduleFileExtensions": ["ts", "tsx", "js", "jsx"],
-		"collectCoverageFrom": ["packages/*/src/**/*.{ts,tsx}"],
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"jsx"
+		],
+		"collectCoverageFrom": [
+			"packages/*/src/**/*.{ts,tsx}"
+		],
 		"testMatch": [
 			"<rootDir>/packages/**/__tests__/**/?(*.)(spec|test).(t|j)s(x|)"
 		],
@@ -90,15 +95,17 @@
 		},
 		"moduleNameMapper": {
 			"^react-dnd$": "<rootDir>/packages/react-dnd/src",
-			"react-dnd-html5-backend":
-				"<rootDir>//packages/react-dnd-html5-backend/src",
-			"react-dnd-test-backend":
-				"<rootDir>//packages/react-dnd-test-backend/src",
+			"react-dnd-html5-backend": "<rootDir>//packages/react-dnd-html5-backend/src",
+			"react-dnd-test-backend": "<rootDir>//packages/react-dnd-test-backend/src",
 			"dnd-core": "<rootDir>//packages/dnd-core/src"
 		}
 	},
 	"lint-staged": {
-		"*.js": ["eslint --fix", "prettier --write", "git add"]
+		"*.js": [
+			"eslint --fix",
+			"prettier --write",
+			"git add"
+		]
 	},
 	"prettier": {
 		"semi": false,
@@ -107,6 +114,9 @@
 		"useTabs": true
 	},
 	"workspaces": {
-		"packages": ["packages/*"]
-	}
+		"packages": [
+			"packages/*"
+		]
+	},
+	"version": "3.0.3"
 }
