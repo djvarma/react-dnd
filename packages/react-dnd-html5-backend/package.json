@@ -1,5 +1,5 @@
 {
-	"name": "react-dnd-html5-backend",
+	"name": "orion-health-react-dnd-html5-backend",
 	"version": "3.0.2",
 	"description": "HTML5 backend for React DnD",
 	"main": "lib/index.js",
@@ -34,6 +34,7 @@
 		"autobind-decorator": "^2.1.0",
 		"dnd-core": "^3.0.2",
 		"lodash": "^4.2.0",
-		"shallowequal": "^1.0.2"
+		"shallowequal": "^1.0.2",
+		"touch-dnd-custom-events": "^1.5.0"
 	}
 }

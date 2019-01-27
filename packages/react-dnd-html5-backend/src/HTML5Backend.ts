@@ -24,6 +24,7 @@ import autobind from 'autobind-decorator'
 import { HTML5BackendContext } from './interfaces'
 
 const shallowEqual = require('shallowequal')
+const setupTouchDNDCustomEvents = require('touch-dnd-custom-events')
 
 declare global {
 	// tslint:disable-next-line interface-name
@@ -85,6 +86,8 @@ export default class HTML5Backend implements Backend {
 		}
 		this.window.__isReactDndBackendSetUp = true
 		this.addEventListeners(this.window)
+		// touch
+        this.addTouchEventListeners(this.window)
 	}
 
 	public teardown() {
@@ -94,10 +97,45 @@ export default class HTML5Backend implements Backend {
 
 		this.window.__isReactDndBackendSetUp = false
 		this.removeEventListeners(this.window)
+		// touch
+        this.removeTouchEventListeners(this.window)
 		this.clearCurrentDragSourceNode()
 		if (this.asyncEndDragFrameId) {
 			this.window.cancelAnimationFrame(this.asyncEndDragFrameId)
 		}
+	}
+
+	// register touch events
+    private addTouchEventListeners(target: any) {
+		if (!target.addEventListener) {
+			return
+		}
+		target.addEventListener('touchdragstart', this.handleTopDragStart);
+		target.addEventListener('touchdragstart', this.handleTopDragStartCapture, true);
+		target.addEventListener('touchdragend', this.handleTopDragEndCapture, true);
+		target.addEventListener('touchdragenter', this.handleTopDragEnter);
+		target.addEventListener('touchdragenter', this.handleTopDragEnterCapture, true);
+		target.addEventListener('touchdragleave', this.handleTopDragLeaveCapture, true);
+		target.addEventListener('touchdragover', this.handleTopDragOver);
+		target.addEventListener('touchdragover', this.handleTopDragOverCapture, true);
+		target.addEventListener('touchdrop', this.handleTopDrop);
+		target.addEventListener('touchdrop', this.handleTopDropCapture, true);
+	}
+	// unregister touch events
+	private removeTouchEventListeners(target: any) {
+		if (!target.removeEventListener) {
+			return
+		}
+		target.removeEventListener('touchdragstart', this.handleTopDragStart)
+		target.removeEventListener('touchdragstart', this.handleTopDragStartCapture, true)
+		target.removeEventListener('touchdragend', this.handleTopDragEndCapture, true)
+		target.removeEventListener('touchdragenter', this.handleTopDragEnter)
+		target.removeEventListener('touchdragenter', this.handleTopDragEnterCapture, true)
+		target.removeEventListener('touchdragleave', this.handleTopDragLeaveCapture, true)
+		target.removeEventListener('touchdragover', this.handleTopDragOver)
+		target.removeEventListener('touchdragover', this.handleTopDragOverCapture, true)
+		target.removeEventListener('touchdrop', this.handleTopDrop)
+		target.removeEventListener('touchdrop', this.handleTopDropCapture, true)
 	}
 
 	public connectDragPreview(sourceId: string, node: any, options: any) {
@@ -111,6 +149,7 @@ export default class HTML5Backend implements Backend {
 	}
 
 	public connectDragSource(sourceId: string, node: any, options: any) {
+		setupTouchDNDCustomEvents()
 		this.sourceNodes[sourceId] = node
 		this.sourceNodeOptions[sourceId] = options
 
@@ -120,13 +159,14 @@ export default class HTML5Backend implements Backend {
 		node.setAttribute('draggable', true)
 		node.addEventListener('dragstart', handleDragStart)
 		node.addEventListener('selectstart', handleSelectStart)
-
+		node.addEventListener('touchdragstart', handleDragStart)
 		return () => {
 			delete this.sourceNodes[sourceId]
 			delete this.sourceNodeOptions[sourceId]
 
 			node.removeEventListener('dragstart', handleDragStart)
 			node.removeEventListener('selectstart', handleSelectStart)
+			node.removeEventListener('touchdragstart', handleDragStart)
 			node.setAttribute('draggable', false)
 		}
 	}
@@ -139,11 +179,17 @@ export default class HTML5Backend implements Backend {
 		node.addEventListener('dragenter', handleDragEnter)
 		node.addEventListener('dragover', handleDragOver)
 		node.addEventListener('drop', handleDrop)
+		node.addEventListener('touchdragenter', handleDragEnter)
+        node.addEventListener('touchdragover', handleDragOver)
+        node.addEventListener('touchdrop', handleDrop)
 
 		return () => {
 			node.removeEventListener('dragenter', handleDragEnter)
 			node.removeEventListener('dragover', handleDragOver)
 			node.removeEventListener('drop', handleDrop)
+			node.removeEventListener('touchdragenter', handleDragEnter)
+            node.removeEventListener('touchdragover', handleDragOver)
+            node.removeEventListener('touchdrop', handleDrop)
 		}
 	}
 
@@ -425,7 +471,10 @@ export default class HTML5Backend implements Backend {
 					anchorPoint,
 					offsetPoint,
 				)
-
+				// setting the drag preview to the center of the list item
+				dragPreviewOffset.x = dragPreview.offsetWidth/2
+				dragPreviewOffset.y = dragPreview.offsetHeight/2
+				
 				dataTransfer.setDragImage(
 					dragPreview,
 					dragPreviewOffset.x,
