@@ -1,6 +1,6 @@
 {
 	"name": "orion-health-react-dnd-master",
-	"private": true,
+	"private": false,
 	"description": "React-DnD Monorepo",
 	"repository": {
 		"type": "git",
@@ -39,12 +39,8 @@
 		"jest:watch": "jest --watch",
 		"jest:cov": "jest --coverage",
 		"lint:es": "eslint .",
-		"lint:ts": "tslint \"packages/**/*.{ts,tsx}\" -e \"**/{lib,node_modules}/**\"",
-		"lint:tsc": "tsc",
 		"lint": "run-s lint:*",
-		"test_modules": "lerna run test --stream",
 		"publish_docs": "./scripts/publishDocumentation.sh",
-		"test": "run-s lint test_modules jest:cov",
 		"prettify": "prettier 'packages/*/**/*.js' 'examples/**/*.js' 'site/**/*.js'",
 		"precommit": "lint-staged",
 		"start": "lerna run --stream start",
